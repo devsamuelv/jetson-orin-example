@@ -10,13 +10,14 @@
 
   outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, ... } : 
     let pkgs = (import nixpkgs {}); in { # Add jetpack
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.system = nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
-      system = "aarch64-linux";
       modules = [
-        ./configuration.nix jetpack.nixosModules.default
+        ./configuration.nix
       ]; # Add jetpack.nixosModules.default
-    };
+    } // jetpack.nixosConfigurations.installer_minimal_cross;
+
+    iso_minimal = self.nixosConfigurations.system.config.system.build.isoImage;
     
     packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
       pname = "main-program";

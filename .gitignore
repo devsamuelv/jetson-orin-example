@@ -3,3 +3,6 @@ result
 build/
 .cache/
 *.img
+bootloader/
+kernel/
+.vscode/
