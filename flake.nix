@@ -24,9 +24,6 @@
     };
 
     iso_minimal = self.nixosConfigurations.system.config.system.build.isoImage;
-    
-    defaultPackage.x86_64-linux = pkgs.mkShell {};
-
 
     # packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
     #   pname = "main-program";
