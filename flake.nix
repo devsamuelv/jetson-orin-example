@@ -9,25 +9,34 @@
   };
 
   outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, ... } : 
-    let pkgs = (import nixpkgs {}); in { # Add jetpack
-    nixosConfigurations.system = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+    let 
+      pkgs = (import nixpkgs {});
+      base = jetpack.nixosConfigurations.installer_minimal_cross;
+    in { # Add jetpack
+    nixosConfigurations.system = base.extendModules {
       modules = [
+        {
+          nixpkgs.overlays = [ jetpack.overlays.default ];
+        }
         ./configuration.nix
-      ]; # Add jetpack.nixosModules.default
-    } // jetpack.nixosConfigurations.installer_minimal_cross;
+      ];
+      specialArgs = { inherit jetpack inputs; };
+    };
 
     iso_minimal = self.nixosConfigurations.system.config.system.build.isoImage;
     
-    packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
-      pname = "main-program";
-      version = "1.0.0";
-      src = ./.;
+    defaultPackage.x86_64-linux = pkgs.mkShell {};
 
-      nativeBuildInputs = [
-        cmake
-        makeWrapper
-      ];
-    };
+
+    # packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
+    #   pname = "main-program";
+    #   version = "1.0.0";
+    #   src = ./src;
+
+    #   nativeBuildInputs = [
+    #     pkgs.pkgsCross.aarch64-multiplatform.cmake
+    #     pkgs.pkgsCross.aarch64-multiplatform.makeWrapper
+    #   ];
+    # };
   };
 }
