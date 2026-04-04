@@ -14,8 +14,8 @@
     in { # Add jetpack
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         modules = [
-          ./configuration.nix 
           jetpack.nixosModules.default
+          ./configuration.nix 
         ]; # Add jetpack.nixosModules.default
       };
 
