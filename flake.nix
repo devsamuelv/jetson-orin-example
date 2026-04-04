@@ -24,6 +24,7 @@
     };
 
     iso_minimal = self.nixosConfigurations.system.config.system.build.isoImage;
+    a = jetpack.nixosConfigurations.installer_minimal_cross.config.system.build.vm;
 
     # packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
     #   pname = "main-program";

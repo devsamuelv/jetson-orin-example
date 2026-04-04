@@ -2,6 +2,7 @@
   hardware.nvidia-jetpack.enable = true;
   hardware.nvidia-jetpack.som = "orin-nano"; # Other options include orin-agx, xavier-nx, and xavier-nx-emmc
   hardware.nvidia-jetpack.super = true;
+  hardware.nvidia.datacenter.enable = true;
   hardware.nvidia-jetpack.carrierBoard = "devkit";
   hardware.nvidia-jetpack.configureCuda = false;  # Disable CUDA config for cross-build
   networking.hostName = "curiosity";
