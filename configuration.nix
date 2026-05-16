@@ -1,8 +1,13 @@
 { ... } : {
+  imports = [
+    ./disk-layout.nix
+  ];
+  # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # Just set these options to make the toplevel system evaluate without assertion errors
-  fileSystems."/".fsType = "tmpfs";
-  boot.loader.grub.enable = false;
-  boot.loader.systemd-boot.enable = false;
+  # fileSystems."/".fsType = "tmpfs";
+  # boot.loader.grub.enable = false;
+  # boot.loader.systemd-boot.enable = false;
 
   hardware.nvidia-jetpack.enable = true;
   hardware.nvidia-jetpack.som = "orin-nano"; # Other options include orin-agx, xavier-nx, and xavier-nx-emmc

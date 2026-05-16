@@ -6,28 +6,23 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     jetpack.url = "github:anduril/jetpack-nixos/db526542891c9d4e49a5a7ccb7e4e59dfc8d5162"; # Add this line
     jetpack.inputs.nixpkgs.follows = "nixpkgs";
+
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
   };
 
-  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, ... } : 
+  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, nixos-facter-modules, ... } : 
     let 
-      pkgs = (import nixpkgs {});
+      pkgs = (import nixpkgs { });
+      crossPkgs = pkgs.pkgsCross.aarch64-multiplatform;
     in { # Add jetpack
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
         modules = [
           jetpack.nixosModules.default
-          ./configuration.nix 
+          disko.nixosModules.disko
+          ./configuration.nix
         ]; # Add jetpack.nixosModules.default
       };
-
-    # packages.aarch64-linux.main-program = with pkgs.pkgsCross.aarch64-multiplatform.clangStdenv; rec {
-    #   pname = "main-program";
-    #   version = "1.0.0";
-    #   src = ./src;
-
-    #   nativeBuildInputs = [
-    #     pkgs.pkgsCross.aarch64-multiplatform.cmake
-    #     pkgs.pkgsCross.aarch64-multiplatform.makeWrapper
-    #   ];
-    # };
   };
 }
