@@ -4,4 +4,4 @@ The jetpack-nixos package provided by Andurill does not have any example project
 
 ## Getting Started
 
-This project is really self-contained and doesn't need a ton of configuration to get started.  
+In order to use this project you need use nixos to compile the project. This is due to the build-in emulation features in nixos.
