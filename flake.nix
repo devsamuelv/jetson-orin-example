@@ -14,14 +14,14 @@
   outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, nixos-facter-modules, ... } : 
     let 
       pkgs = (import nixpkgs { });
-      crossPkgs = pkgs.pkgsCross.aarch64-multiplatform;
     in { # Add jetpack
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
-          jetpack.nixosModules.default
           disko.nixosModules.disko
           ./configuration.nix
+          ./hardware-configuration.nix
+          jetpack.nixosModules.default
         ]; # Add jetpack.nixosModules.default
       };
   };
