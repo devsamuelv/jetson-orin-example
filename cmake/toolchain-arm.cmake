@@ -1,0 +1,3 @@
+set(CMAKE_SYSTEM_PROCESSOR ARM)
+
+set(TOOLCHAIN_PREFIX arm-linux-gnueabi-)

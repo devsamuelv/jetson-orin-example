@@ -1,6 +1,11 @@
-{ ... } : {
+{ pkgs, ... } : {
   imports = [
     ./disk-layout.nix
+  ];
+
+  nix.nixPath = [
+    "nixos-config=/etc/nixos/configuration.nix"
+    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs"
   ];
 
   boot.loader.grub.device = "nodev";
@@ -49,7 +54,7 @@
   hardware.nvidia-container-toolkit.enable = true;
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  environment.systemPackages = [];
+  environment.systemPackages = [pkgs.test];
 
   # Enable GPU support - needed even for CUDA and containers
   hardware.graphics.enable = true;

@@ -1,5 +1,9 @@
 # !/bin/bash
 
-# Maybe use jq to handle json data in bash?
-nixos-rebuild switch --flake .#nixos \
-  --target-host nixos@192.168.1.35 --build-host localhost --verbose
+if [ -z "$DEPLOY_HOST" ]; then
+  echo 'Please define DEPLOY_HOST by doing: export DEPLOY_HOST="device-ip";'
+else 
+  # Maybe use jq to handle json data in bash?
+  nixos-rebuild switch --flake .#nixos \
+    --target-host nixos@$DEPLOY_HOST --build-host localhost --verbose
+fi
