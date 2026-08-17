@@ -31,13 +31,13 @@
           ./hardware-configuration.nix
           jetpack.nixosModules.default
 
-          ({ self, ... }: {
-            nixpkgs.overlays = [
-              (final: prev: {
-                test = self.packages.x86_64-linux.test;
-              })
-            ];
-          })
+          # ({ self, ... }: {
+          #   nixpkgs.overlays = [
+          #     (final: prev: {
+          #       test = self.packages.x86_64-linux.test;
+          #     })
+          #   ];
+          # })
         ]; # Add jetpack.nixosModules.default
       };
 
