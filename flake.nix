@@ -4,7 +4,7 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    jetpack.url = "github:anduril/jetpack-nixos/db526542891c9d4e49a5a7ccb7e4e59dfc8d5162"; # Add this line
+    jetpack.url = "github:anduril/jetpack-nixos/a3d955a85d1c2dd6d311f76bbc901d56094d337d"; # Add this line
     jetpack.inputs.nixpkgs.follows = "nixpkgs";
 
     httplib = { url = "path:lib/httplib"; };
@@ -14,8 +14,27 @@
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
   };
 
-  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, httplib, spdlog, nixos-facter-modules, ... } :
-  flake-utils.lib.eachDefaultSystem (system: 
+  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, nixos-facter-modules, ... } :
+  {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      modules = [
+        disko.nixosModules.disko
+        ./configuration.nix
+        ./hardware-configuration.nix
+        jetpack.nixosModules.default
+
+        # ({ self, ... }: {
+        #   nixpkgs.overlays = [
+        #     (final: prev: {
+        #       test = self.packages.x86_64-linux.test;
+        #     })
+        #   ];
+        # })
+      ]; # Add jetpack.nixosModules.default
+    };
+  }
+  // flake-utils.lib.eachDefaultSystem (system: 
     let 
       pkgs = (import nixpkgs {
         inherit system;
@@ -26,24 +45,6 @@
         crossSystem.config = "aarch64-unknown-linux-gnu"; 
       };
     in { # Add jetpack
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules = [
-          disko.nixosModules.disko
-          ./configuration.nix
-          ./hardware-configuration.nix
-          jetpack.nixosModules.default
-
-          ({ self, ... }: {
-            nixpkgs.overlays = [
-              (final: prev: {
-                test = self.packages.x86_64-linux.test;
-              })
-            ];
-          })
-        ]; # Add jetpack.nixosModules.default
-      };
-
       packages.test = with pkgs.clangStdenv;
         mkDerivation {
           pname = "jetson-example";

@@ -18,7 +18,9 @@
   hardware.nvidia-jetpack.som = "orin-nano"; # Other options include orin-agx, xavier-nx, and xavier-nx-emmc
   hardware.nvidia-jetpack.super = true;
   hardware.nvidia-jetpack.carrierBoard = "devkit";
-  networking.hostName = "curiosity";
+
+  # Fixes a known issue with the image builder falling back on the AGX based power config for orin nano super instead of the proper config for the orin nano super
+  services.nvpmodel.configFile = "${pkgs.nvidia-jetpack.l4t-nvpmodel}/etc/nvpmodel/nvpmodel_p3767_0003_super.conf";
 
   users.users.nixos = {
     isNormalUser = true;
@@ -26,9 +28,10 @@
       "wheel"
       "networkmanager"
       "video"
+      "docker"
     ];
     # Allow the graphical user to login without password
-    initialHashedPassword = "$y$j9T$yYHRDTwtfY2giEIzCJq8o/$wjkfKVb5v3/QlnMcqi1Zd16J9I1lLwDJ0/6YNMKWL//";
+    initalPassword = "nixos123";
   };
 
   services.openssh.enable = true;
@@ -46,15 +49,43 @@
 
   services.getty.autologinUser = "nixos";
 
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking = {
+    firewall.enable = true;
+    hostName = "curiosity";
+    useDHCP = false;
+    interfaces.eth0 = {
+      ipv4.addresses = [ {
+        address = "192.168.1.64";
+        prefixLength = 24;
+      } ];
+    };
+    firewall.allowedTCPPorts = [ 
+      22 
+      25565 
+      443 
+      80 
+    ];
+    defaultGateway = "192.168.1.1";
+    nameservers = [ "8.8.8.8" "1.1.1.1" ];
+  };
 
   nixpkgs.config.allowUnfree = true;
 
   hardware.nvidia-container-toolkit.enable = true;
-  
+  virtualisation.docker = {
+    enable = true;
+  };
+
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  environment.systemPackages = [pkgs.test];
+  environment.systemPackages = with pkgs; [
+    podman
+    podman-tui
+    docker
+    docker-compose
+    git
+    neovim
+    wget
+  ];
 
   # Enable GPU support - needed even for CUDA and containers
   hardware.graphics.enable = true;
