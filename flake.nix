@@ -7,11 +7,14 @@
     jetpack.url = "github:anduril/jetpack-nixos/db526542891c9d4e49a5a7ccb7e4e59dfc8d5162"; # Add this line
     jetpack.inputs.nixpkgs.follows = "nixpkgs";
 
+    httplib = { url = "path:lib/httplib"; };
+    spdlog = { url = "path:lib/spdlog"; };
+
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
   };
 
-  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, nixos-facter-modules, ... } :
+  outputs = inputs@{ self, nixpkgs, jetpack, flake-utils, disko, httplib, spdlog, nixos-facter-modules, ... } :
   flake-utils.lib.eachDefaultSystem (system: 
     let 
       pkgs = (import nixpkgs {
@@ -46,7 +49,12 @@
           pname = "jetson-example";
           version = "1.0.0";
           src = ./.;
-          buildInputs = [ pkgs.gtk2 pkgs.cmake pkgs.makeWrapper ];
+          buildInputs = [ pkgs.gtk2 pkgs.cmake ];
+          nativeBuildInputs = [
+            pkgs.makeWrapper
+            httplib.packages.x86_64-linux.cpp-httplib
+            spdlog.packages.x86_64-linux.default
+          ];
 
           buildPhase = ''
             mkdir -p build
@@ -66,7 +74,7 @@
           version = "1.0.0";
           src = ./.;
           buildInputs = [ crossPkgs.gtk2 crossPkgs.cmake ];
-          nativeBuildInputs = [crossPkgs.makeWrapper];
+          nativeBuildInputs = [ crossPkgs.makeWrapper ];
 
           buildPhase = ''
             mkdir -p build
