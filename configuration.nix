@@ -29,10 +29,12 @@
       "networkmanager"
       "video"
       "docker"
+      "podman"
     ];
     # Allow the graphical user to login without password
-    initalPassword = "nixos123";
-  };
+    initialPassword = "nixos123";
+
+ };
 
   services.openssh.enable = true;
 
@@ -59,11 +61,14 @@
         prefixLength = 24;
       } ];
     };
-    firewall.allowedTCPPorts = [ 
-      22 
-      25565 
-      443 
-      80 
+    firewall.allowedTCPPorts = [
+      22
+      25565
+      443
+      80
+      40111
+      8080
+      9120
     ];
     defaultGateway = "192.168.1.1";
     nameservers = [ "8.8.8.8" "1.1.1.1" ];
@@ -71,9 +76,26 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  hardware.nvidia-container-toolkit.enable = true;
+  # hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker = {
     enable = true;
+    enableOnBoot = true;
+    enableNvidia = true;
+  };
+
+  virtualisation.podman = {
+    enable = true;
+    # dockerCompat = true; # Creates a symlink from docker to podman
+    defaultNetwork.settings.dns_enabled = true; # Required for containers under podman-compose to be able to talk to each other.
+  };
+
+  services.tailscale = {
+    # Enable tailscale at startup
+    enable = true;
+
+    # If you would like to use a preauthorized key, set
+    # authKeyFile = "/run/secrets/tailscale_key";
+    # Note: maximum expire time is 90 days
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -89,4 +111,12 @@
 
   # Enable GPU support - needed even for CUDA and containers
   hardware.graphics.enable = true;
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;
+    nvidiaSettings = true;
+    # package = config.boot.kernelPackages.nvidiaPackages.production;
+  };
 }
